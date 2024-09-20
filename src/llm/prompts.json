@@ -1,0 +1,35 @@
+{
+    "entityRecognition": {
+        "system": [
+            "You are extracting Student, Assessment, Module, Instructor, Course from the text"
+        ],
+        "human": [
+            "Use the given format to extract information from the following",
+            "input: {question}"
+        ]
+    },
+    "cypherPrompt": {
+        "system": [
+            "Given an input question, convert it to a Cypher query. No pre-amble."
+        ],
+        "human": [
+            "Based on the Neo4j graph schema below, write a Cypher query that would answer the user's question:",
+            "{schema}",
+            "Entities in the question map to the following database values:",
+            "{entities_list}",
+            "Question: {question}",
+            "Cypher query:"
+        ]
+    },
+    "responsePrompt": {
+        "system": [
+            "Given an input question and Cypher response, convert it to a natural language answer. No pre-amble."
+        ],
+        "human": [
+            "Based on the the question, Cypher query, and Cypher response, write a natural language response:",
+            "Question: {question}",
+            "Cypher query: {query}",
+            "Cypher Response: {response}"
+        ]
+    }
+}

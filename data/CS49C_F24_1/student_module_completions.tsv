@@ -1,0 +1,76 @@
+completion_id	student_id	module_id	minutes_spent	feedback	rating
+1	1	1	30	A highlight was the expertly delivered lecture that brought complex concepts to life.	5
+2	1	2	37	The integration of multimedia elements made the lectures vivid and memorable.	5
+3	1	3	33		1
+4	1	4	53		5
+5	1	5	55	Real-world applications were seamlessly integrated, making the theoretical concepts much more tangible.	5
+6	2	1	59	Objectives were unclear, making it hard to follow along and gauge what was important.	2
+11	3	1	39	Multimedia elements were included to some extent, but their integration could have been more seamless.	3
+12	3	2	39		5
+13	3	3	53	Insights provided were superficial, and the presentations lacked depth and quality.	2
+14	3	4	31	Theoretical concepts lacked real-world applications, leaving them feeling abstract and irrelevant.	2
+16	4	1	41	Relevance of the content was questionable with few practical examples, making the theoretical approach feel even more detached.	1
+17	4	2	42		4
+18	4	3	33	Theoretical concepts were presented without many real-world applications, leaving room for improvement.	3
+21	5	1	32		4
+22	5	2	32		1
+23	5	3	45	Content presentation was satisfactory, although there were opportunities for improvement in delivery.	3
+24	5	4	34		5
+25	5	5	44	Even highlighted lectures failed to engage or enlighten, making complex concepts even more inaccessible.	1
+26	6	1	39		1
+27	6	2	39	Captivating lecture delivery along with comprehensive content coverage made the content stand out.	5
+28	6	3	35	Lectures were poorly structured, often leading to confusion rather than clarity.	1
+29	6	4	43		3
+30	6	5	53	The conclusion of the course provided a summary, though it could have been more comprehensive.	3
+31	7	1	33	Community engagement was facilitated through well-designed discussion prompts that sparked meaningful conversations.	5
+32	7	2	32	Lecture delivery was dull and the content often felt disjointed and incomplete.	2
+33	7	3	46		5
+34	7	4	48	Use of multimedia was minimal and often felt like an afterthought rather than a planned part of the lectures.	2
+35	7	5	55		3
+36	8	1	42		2
+37	8	2	43	Content flow was inconsistent, and the lecture materials often seemed haphazardly put together.	1
+38	8	3	39	The course concluded abruptly without adequately tying together the key concepts, leaving many questions unanswered.	2
+39	8	4	58		3
+40	8	5	50	Presentation creativity was modest, with potential for more innovative approaches.	3
+41	9	1	59	Content was consistently relevant and enriched with practical examples, which bridged the gap between theory and practice.	5
+42	9	2	40	Community discussions were present but could have been more active and engaging.	3
+43	9	3	33	Lectures were not only informative but also creatively presented, keeping the interest high throughout the course.	4
+44	9	4	54	In-depth insights paired with high-quality presentations deepened understanding.	5
+45	9	5	39	Discussion prompts were provided, but their effectiveness depended on participant engagement.	3
+46	10	1	49		4
+47	10	2	56		4
+51	11	1	44	Lectures often lacked both clarity and depth, making them hard to follow and easy to forget.	2
+52	11	2	46	Each lecture built on the previous one, ensuring a cohesive learning journey.	4
+53	11	3	32		5
+54	11	4	48	Interactive community discussions greatly enhanced the learning experience.	4
+55	11	5	41	There was little sense of progression between modules, making the course feel fragmented.	2
+56	12	1	52	Engaging discussions helped to clarify and expand on the lecture material, enriching the learning experience.	4
+61	13	1	55		3
+62	13	2	34	The structure and clear objectives provided in the lectures made learning smooth and efficient.	4
+63	13	3	47	The presentation of informative content in a clear and engaging manner was impressive.	5
+64	13	4	59		4
+65	13	5	53	Overall, the course content was satisfactory, though there were areas with room for improvement.	3
+66	14	1	37		1
+67	14	2	36	Relevance of content was generally maintained, though more real-world examples could have been beneficial.	3
+68	14	3	47		5
+69	14	4	30	Lectures were well-structured, breaking down complex ideas into understandable parts.	4
+70	14	5	31	The clarity and depth of the lectures made it easy to follow and absorb the material.	4
+71	15	1	35		4
+72	15	2	36	The basics were introduced in a confusing manner, making it difficult to grasp the foundational concepts.	1
+73	15	3	60		3
+74	15	4	59	Progression between modules was observable, though some transitions felt smoother than others.	3
+81	17	1	51		1
+82	17	2	42	Lectures provided a baseline understanding, but deeper exploration was left to individual study.	3
+83	17	3	47		5
+84	17	4	49	The quality of the course content was inconsistent, leading to a generally unsatisfying learning experience.	1
+85	17	5	57	Content flow was generally consistent, though there were some gaps in the organization.	3
+86	18	1	37		3
+87	18	2	39		4
+88	18	3	47	Objectives were somewhat clear, though additional clarity could have enhanced the learning experience.	3
+89	18	4	55	The consistent quality of the content across the modules made the entire course a rewarding experience.	5
+90	18	5	55	The introduction to the basics provided a foundation, although it could have been clearer.	3
+91	19	1	59		3
+92	19	2	44	Discussion prompts were uninspired, leading to repetitive and unproductive discussions.	1
+93	19	3	38		1
+94	19	4	43	The introduction to the basics was clear and engaging, setting a high standard for the course.	5
+95	19	5	34	Content presentation was lackluster, with important points buried in poorly delivered lectures.	2

@@ -1,0 +1,14 @@
+version: 1  
+llms: 
+  openai:
+    model: "gpt-35-turbo"
+    temperature: 0
+  gemini:
+    model: "gemini-1.5-flash"
+    temperature: 0
+    max_retries: 2
+
+default_llm: gemini
+
+
+

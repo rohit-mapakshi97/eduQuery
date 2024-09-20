@@ -1,0 +1,16 @@
+{
+    "course_exists": "MATCH (c:Course {course_id: $course_id, semester: $semester, section_number: $section_number}) RETURN c",
+    "instructor_exists": "MATCH (i:Instructor {instructor_id: $instructor_id}) RETURN i",
+    "student_exists": "MATCH (s:Student {student_id: $student_id}) RETURN s",
+    "create_course": "CREATE (c:Course {course_id: $course_id, semester: $semester, section_number: $section_number})",
+    "create_instructor": "MERGE (i:Instructor {instructor_id: $instructor_id, instructor_name: $instructor_name}) WITH i MATCH (c:Course {course_id: $course_id, semester: $semester, section_number: $section_number}) MERGE (i)-[:TEACHES]->(c)",
+    "create_assessment": "MERGE (a:Assessment {assessment_id: $assessment_id, assessment_name: $assessment_name}) WITH a MATCH (c:Course {course_id: $course_id}) MERGE (a)-[:PART_OF]->(c)",
+    "create_module": "MERGE (m:Module {module_id: $module_id, module_name: $module_name}) WITH m MATCH (c:Course {course_id: $course_id}) MERGE (m)-[:PART_OF]->(c)",
+    "create_student": "MERGE (s:Student {student_id: $student_id, student_name: $student_name})",
+    "create_enrollment": "MATCH (s:Student {student_id: $student_id}) MATCH (c:Course {course_id: $course_id}) MERGE (s)-[:ENROLLED_IN]->(c)",
+    "create_completed_assessment": "MATCH (s:Student {student_id: $student_id}) MATCH (a:Assessment {assessment_id: $assessment_id}) MERGE (s)-[r:COMPLETED_ASSESSMENT]->(a) SET r.score = $score, r.attempts = $attempts",
+    "create_completed_module": "MATCH (s:Student {student_id: $student_id}) MATCH (m:Module {module_id: $module_id}) MERGE (s)-[r:COMPLETED_MODULE]->(m) SET r.minutes_spent = $minutes_spent, r.feedback = $feedback, r.rating = $rating",
+    "entity_db_match_query": "MATCH (p:Student|Assessment|Module|Instructor|Course) WHERE p.student_name CONTAINS $value OR p.assessment_name CONTAINS $value OR p.module_name CONTAINS $value OR p.instructor_name CONTAINS $value OR p.course_id CONTAINS $value RETURN coalesce(p.student_name,p.assessment_name,p.module_name,p.instructor_name,p.course_id) AS result, labels(p)[0] AS type LIMIT 1",
+    "entity_db_fuzzy_match_query": "MATCH (p:Student|Assessment|Module|Instructor|Course) WHERE apoc.text.fuzzyMatch(p.student_name, $value) OR apoc.text.fuzzyMatch(p.assessment_name, $value) OR apoc.text.fuzzyMatch(p.module_name, $value) OR apoc.text.fuzzyMatch(p.instructor_name, $value) OR apoc.text.fuzzyMatch(p.course_id, $value) RETURN coalesce(p.student_name,p.assessment_name,p.module_name,p.instructor_name,p.course_id) AS result, labels(p)[0] AS type LIMIT 1",
+    "entity_db_apoc_node_search": "CALL apoc.search.node({Student: ['student_name'], Assessment: ['assessment_name'], Module: ['module_name'], Instructor: ['instructor_name'], Course: ['course_id']}, 'CONTAINS', $value) YIELD node RETURN node AS result, labels(node)[0] AS type LIMIT 1"
+}
