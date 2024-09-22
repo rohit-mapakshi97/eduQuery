@@ -12,5 +12,10 @@
     "create_completed_module": "MATCH (s:Student {student_id: $student_id}) MATCH (m:Module {module_id: $module_id}) MERGE (s)-[r:COMPLETED_MODULE]->(m) SET r.minutes_spent = $minutes_spent, r.feedback = $feedback, r.rating = $rating",
     "entity_db_match_query": "MATCH (p:Student|Assessment|Module|Instructor|Course) WHERE p.student_name CONTAINS $value OR p.assessment_name CONTAINS $value OR p.module_name CONTAINS $value OR p.instructor_name CONTAINS $value OR p.course_id CONTAINS $value RETURN coalesce(p.student_name,p.assessment_name,p.module_name,p.instructor_name,p.course_id) AS result, labels(p)[0] AS type LIMIT 1",
     "entity_db_fuzzy_match_query": "MATCH (p:Student|Assessment|Module|Instructor|Course) WHERE apoc.text.fuzzyMatch(p.student_name, $value) OR apoc.text.fuzzyMatch(p.assessment_name, $value) OR apoc.text.fuzzyMatch(p.module_name, $value) OR apoc.text.fuzzyMatch(p.instructor_name, $value) OR apoc.text.fuzzyMatch(p.course_id, $value) RETURN coalesce(p.student_name,p.assessment_name,p.module_name,p.instructor_name,p.course_id) AS result, labels(p)[0] AS type LIMIT 1",
-    "entity_db_apoc_node_search": "CALL apoc.search.node({Student: ['student_name'], Assessment: ['assessment_name'], Module: ['module_name'], Instructor: ['instructor_name'], Course: ['course_id']}, 'CONTAINS', $value) YIELD node RETURN node AS result, labels(node)[0] AS type LIMIT 1"
+    "entity_db_apoc_node_search": "CALL apoc.search.node({Student: ['student_name'], Assessment: ['assessment_name'], Module: ['module_name'], Instructor: ['instructor_name'], Course: ['course_id']}, 'CONTAINS', $value) YIELD node RETURN node AS result, labels(node)[0] AS type LIMIT 1",
+    "entity_db_fulltext_search": "CALL db.index.fulltext.queryNodes('nameIndex', $value) YIELD node, score RETURN node AS result, labels(node)[0] AS type ORDER BY score DESC LIMIT 1",
+    "del_nodes_relationships": "MATCH (n) DETACH DELETE n",
+    "del_name_index": "DROP INDEX nameIndex IF EXISTS",
+    "create_name_index": "CREATE FULLTEXT INDEX nameIndex IF NOT EXISTS FOR (n:Student | Assessment | Module | Instructor | Course) ON EACH [n.student_name, n.assessment_name, n.module_name, n.instructor_name, n.course_id]"
+
 }

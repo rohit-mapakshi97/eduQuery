@@ -27,10 +27,22 @@ class QueryName:
     CREATE_COMPLETED_ASSESSMENT = 'create_completed_assessment'
     CREATE_COMPLETED_MODULE = 'create_completed_module'
 
+    # Create name index for DB matching
+    CREATE_NAME_INDEX = 'create_name_index'
+
+    # Clean up
+    DEL_NODES_RELATIONSHIPS = 'del_nodes_relationships'
+    DEL_NAME_INDEX = 'del_name_index'
+
     # Pipeline Queries 
-    ENTITY_DB_MATCH_QUERY = 'entity_db_match_query'
-    ENTITY_DB_FUZZY_MATCH_QUERY = 'entity_db_fuzzy_match_query'
-    ENTITY_DB_APOC_NODE_SEARCH = 'entity_db_apoc_node_search'
+    ENITY_DB_FULLTEXT_SEARCH = 'entity_db_fulltext_search'
+    # The following were tested but depicated now:
+    # ENTITY_DB_MATCH_QUERY = 'entity_db_match_query'
+    # ENTITY_DB_FUZZY_MATCH_QUERY = 'entity_db_fuzzy_match_query'
+    # ENTITY_DB_APOC_NODE_SEARCH = 'entity_db_apoc_node_search'
+    # ENTITY_DB_APOC_SOUNDEX_SEARCH = 'entity_db_apoc_soundex_search'
+
+
 
 
 class CypherQueryRepository:

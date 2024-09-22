@@ -5,7 +5,7 @@ llms:
     temperature: 0
   gemini:
     model: "gemini-1.5-flash"
-    temperature: 0
+    temperature: 0.7
     max_retries: 2
 
 default_llm: gemini

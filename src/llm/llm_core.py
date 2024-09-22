@@ -2,15 +2,12 @@ from typing import Dict, Any, Tuple, List
 from langchain_core.language_models import BaseChatModel
 from src.keys import OpenAPIConfig, GeminiAPIConfig
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.prompts import ChatPromptTemplate
 import json
 import logging
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-
-# from langchain.chat_models import AzureChatOpenAI
 
 class LLMNotSupportedError(Exception):
     pass
@@ -64,39 +61,33 @@ class PromptRepository:
     def _initialize(self) -> None:
         self.prompts = self._load_prompts()
 
-    def get_ner_prompt(self) -> ChatPromptTemplate:
+    def get_ner_prompt(self) -> Tuple[str, str]:
         """
         Returns the prompt for Named Entity Recognition
         """
-        return ChatPromptTemplate.from_messages(
-            self._prepare_prompt('entityRecognition')
-        )
+        return self._prepare_prompt('entityRecognition')
 
-    def get_cypher_prompt(self) -> ChatPromptTemplate:
+    def get_cypher_prompt(self) -> Tuple[str, str]:
         """
         Returns the prompt used for creating Cypher Query
         """
-        return ChatPromptTemplate.from_messages(
-            self._prepare_prompt('cypherPrompt')
-        )
+        return self._prepare_prompt('cypherPrompt')
 
-    def get_response_prompt(self) -> ChatPromptTemplate:
+    def get_response_prompt(self) -> Tuple[str, str]:
         """
         Returns the prompt for generating the final response
         """
-        return ChatPromptTemplate.from_messages(
-            self._prepare_prompt('responsePrompt')
-        )
+        return self._prepare_prompt('responsePrompt')
 
     def _load_prompts(self) -> Dict[str, Any]:
         file_path = Path(__file__).resolve().parent / 'prompts.json'
         with open(file_path, 'r') as file:
             return json.load(file)
 
-    def _prepare_prompt(self, key: str) -> List[Tuple[str, str]]:
+    def _prepare_prompt(self, key: str) -> Tuple[str, str]:
         def _concat(lines: list) -> str:
             return ' \n '.join(lines)
 
-        system = ("system", _concat(self.prompts[key]["system"]))
-        human = ("human", _concat(self.prompts[key]["human"]))
-        return [system, human]
+        system = _concat(self.prompts[key]["system"])
+        human = _concat(self.prompts[key]["human"])
+        return system, human
