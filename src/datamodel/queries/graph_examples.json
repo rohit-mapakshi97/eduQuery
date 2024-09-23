@@ -1,6 +1,10 @@
 [
   {
-    "question": "what is the average score for students for assessment 1",
+    "question": "What is the average score for students for assessment 1?",
     "query": "MATCH (s:Student)-[c:COMPLETED_ASSESSMENT]->(a:Assessment {assessment_id: '3'}) RETURN AVG(toFloat(c.score)) AS average_score"
+  },
+  {
+    "question":"How much time did students spend on module 1?",
+    "query": "MATCH (s:Student)-[cm:COMPLETED_MODULE]->(m:Module {module_id: '1'}) RETURN SUM(toFloat(cm.minutes_spent)) AS total_time_spent"
   }
 ]

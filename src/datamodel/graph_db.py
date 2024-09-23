@@ -1,7 +1,7 @@
-from neo4j import GraphDatabase, Result
+from neo4j import GraphDatabase
 import logging
 from pathlib import Path
-from typing import Dict, List
+from typing import List, Any, Dict
 import json
 
 logger = logging.getLogger(__name__)
@@ -36,13 +36,12 @@ class QueryName:
 
     # Pipeline Queries 
     ENITY_DB_FULLTEXT_SEARCH = 'entity_db_fulltext_search'
-    # The following were tested but depicated now:
+
+    # @Deprecated
     # ENTITY_DB_MATCH_QUERY = 'entity_db_match_query'
     # ENTITY_DB_FUZZY_MATCH_QUERY = 'entity_db_fuzzy_match_query'
     # ENTITY_DB_APOC_NODE_SEARCH = 'entity_db_apoc_node_search'
     # ENTITY_DB_APOC_SOUNDEX_SEARCH = 'entity_db_apoc_soundex_search'
-
-
 
 
 class CypherQueryRepository:
@@ -63,16 +62,6 @@ class CypherQueryRepository:
         self.examples = self._load_json(query_folder_path / 'graph_examples.json')
         self.queries = self._load_json(query_folder_path / 'graph_queries.json')
 
-    def _load_json(self, file_path:str) -> Dict[str, str]:
-        try: 
-            with open(file_path, 'r') as file: 
-                data = json.load(file)
-                return data 
-        # Specific exceptions should be added
-        except Exception as e:
-            logger.error(f'An unexpected error occurred while loading JSON from file: {file_path}')
-            raise e 
-
     def get_query(self, query_name: str) -> str:
         """
         Retrieve a Cypher query by name.
@@ -83,12 +72,27 @@ class CypherQueryRepository:
             logger.error(f'Query: {query_name} not found in the repository.')
             raise KeyError(f'Query: {query_name} not found in the repository.')
 
+    def getExamples(self) -> List[Dict[str, str]]:
+        return self.examples
+
+    def _load_json(self, file_path: str) -> Any:
+        try:
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+                return data
+                # Specific exceptions should be added
+        except Exception as e:
+            logger.error(f'An unexpected error occurred while loading JSON from file: {file_path}')
+            raise e
+
+
 class Neo4jDB:
     """
     This Class is used to perform CRUD operations on Neo4j Database
     """
+
     def __init__(self, uri, user, password) -> None:
-        try: 
+        try:
             self.driver = GraphDatabase.driver(uri, auth=(user, password))
         except Exception as e:
             logger.error(f'Failed to initalize Neo4j DB {e}')
@@ -99,9 +103,9 @@ class Neo4jDB:
 
     # Context Management 
     def __enter__(self):
-         return self 
+        return self
 
-    def __exit__(self, exc_type, exc_value, traceback): 
+    def __exit__(self, exc_type, exc_value, traceback):
         self.close()
 
     def run_query(self, query, parameters=None) -> List:

@@ -1,7 +1,7 @@
 import streamlit as st
-from src.pipeline import EduQuery
+from src.pipeline import GraphEduQuery
 
-edu_query = EduQuery()
+edu_query = GraphEduQuery()
 
 st.title('Welcome to Edu Query!')
 

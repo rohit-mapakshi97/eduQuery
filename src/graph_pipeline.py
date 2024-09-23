@@ -3,8 +3,8 @@ import yaml
 from typing import Dict, Any, List
 from src.datamodel.graph_db import CypherQueryRepository, QueryName
 from langchain_core.runnables import RunnablePassthrough
-from src.llm.llm_core import LLMFactory, PromptRepository
-from src.llm.output_templates import Entities
+from src.pipeline.llm import LLMFactory
+from src.pipeline.edu_query import EduQuery, PromptRepository, Entities
 from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain_community.graphs import Neo4jGraph
 from langchain_core.messages import AIMessage
@@ -12,8 +12,7 @@ from src.keys import Neo4jDBConfig
 from langchain_community.chains.graph_qa.cypher_utils import CypherQueryCorrector, Schema
 from langchain_core.output_parsers import StrOutputParser
 from langchain.callbacks.tracers import ConsoleCallbackHandler
-from langchain_core.prompts import ChatPromptTemplate, FewShotChatMessagePromptTemplate, FewShotPromptTemplate, \
-    PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, FewShotChatMessagePromptTemplate
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -21,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 # TODO
-class EduQuery:
+class GraphEduQuery(EduQuery):
     """
     EduQuery is a class that processes user queries by performing Named Entity Recognition (NER),
     mapping entities to a Neo4j graph database, generating Cypher queries, and providing
@@ -60,8 +59,8 @@ class EduQuery:
     # Note: The pipleine is divided into these steps to allow unit testing of individual components
     # Step 1: Named Entity Recognition
     def prepare_ner_chain(self):
-        dict_schema = convert_to_openai_function(Entities)
         system, human = self.prompt_repo.get_ner_prompt()
+        dict_schema = convert_to_openai_function(Entities)  # Output Format
         ner_prompt = ChatPromptTemplate.from_messages(
             [("system", system), ("human", human)]
         )
@@ -95,36 +94,31 @@ class EduQuery:
     #     )
     #     return cypher_response
 
-
     # Step 3: Prepare cypher query based on identified entities and db match
     def prepare_cypher_response(self, entity_chain):
-        system, human = self.prompt_repo.get_cypher_prompt()
-        cypher_prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
-        # TODO Externalize this from repository
-        exp = [
-            {
-                "question": "what is the average score for students for assessment 1",
-                "query": "MATCH (s:Student)-[c:COMPLETED_ASSESSMENT]->(a:Assessment {assessment_id: '1'}) RETURN AVG(toFloat(c.score)) AS average_score"
-            }
-        ]
 
+        # 1. Few-shot Examples - pull examples from the repository
         example_prompt = ChatPromptTemplate.from_messages(
             [('human', "{question}"), ('system', "{query}")]
         )
-
         few_shot_prompt = FewShotChatMessagePromptTemplate(
-            examples=exp,
+            examples=self.query_repo.getExamples(),
             example_prompt=example_prompt,
         )
 
+        # 2. Create Prompt
+        system, human = self.prompt_repo.get_cypher_prompt()
+        cypher_prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
+
+        # 3. Prepare chain
         cypher_response = (
                 RunnablePassthrough.assign(names=entity_chain)
                 | RunnablePassthrough.assign(
-                    entities_list=lambda x: self.map_to_database(x['names'][0]['args']['names']),
-                    schema=lambda _: self.graph.get_schema)
+            entities_list=lambda x: self.map_to_database(x['names'][0]['args']['names']),
+            schema=lambda _: self.graph.get_schema)
                 | RunnablePassthrough.assign(
-                    examples=lambda _: few_shot_prompt.format()
-                    )
+            examples=lambda _: few_shot_prompt.format()
+        )
                 | cypher_prompt
                 | self.llm.bind(stop=["\nCypherResult:"])
                 | self._clean_cypher_output
@@ -139,6 +133,8 @@ class EduQuery:
             for el in self.graph.structured_schema.get("relationships")
         ]
         cypher_validation = CypherQueryCorrector(corrector_schema)
+
+        # Prompt
         system, human = self.prompt_repo.get_response_prompt()
         response_prompt = ChatPromptTemplate.from_messages(
             [("system", system), ("human", human)]
