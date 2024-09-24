@@ -6,5 +6,21 @@
   {
     "question":"How much time did students spend on module 1?",
     "query": "MATCH (s:Student)-[cm:COMPLETED_MODULE]->(m:Module {module_id: '1'}) RETURN SUM(toFloat(cm.minutes_spent)) AS total_time_spent"
+  },
+  {
+    "question": "What did students think about the content in module 1?",
+    "query": "MATCH (s:Student)-[cm:COMPLETED_MODULE]->(m:Module {module_id: '1'}) RETURN cm.feedback"
+  },
+  {
+    "question": "How is Student 1 performing? or How is Student 1 doing?",
+    "query": "MATCH (s:Student {student_id: '1'}) OPTIONAL MATCH (s)-[ca:COMPLETED_ASSESSMENT]->(a:Assessment) WITH s, COUNT(ca) AS num_assessments, AVG(toFloat(ca.score)) AS avg_score OPTIONAL MATCH (s)-[cm:COMPLETED_MODULE]->(m:Module) WITH s, num_assessments, avg_score, COUNT(cm) AS num_modules, AVG(toFloat(cm.minutes_spent)) AS avg_time_spent OPTIONAL MATCH (s)-[cm]->(m:Module) RETURN num_assessments, num_modules, avg_score, avg_time_spent, COLLECT({module_name: m.module_name, feedback: cm.feedback}) AS feedback_per_module"
+  },
+  {
+    "question": "How was assessment 1?",
+    "query": "MATCH (a:Assessment {assessment_id: 'assessment_id'}) OPTIONAL MATCH (s:Student)-[ca:COMPLETED_ASSESSMENT]->(a) WITH a, COUNT(ca) AS num_students_completed, AVG(toFloat(ca.score)) AS avg_score, AVG(toInteger(ca.attempts)) AS avg_attempts OPTIONAL MATCH (s:Student)-[ca2:COMPLETED_ASSESSMENT]->(a) WITH a, num_students_completed, avg_score, avg_attempts, s.student_id AS student_id, s.student_name AS student_name, ca2.score AS score ORDER BY toFloat(score) DESC WITH a, num_students_completed, avg_score, avg_attempts, COLLECT({student_id: student_id, student_name: student_name, score: score})[0..3] AS top_3_students RETURN num_students_completed, avg_score, avg_attempts, top_3_students"
+  },
+  {
+    "question": "How many students completed the course?",
+    "query": "MATCH (c:Course) WITH c MATCH (c)<-[:PART_OF]-(m:Module) MATCH (c)<-[:PART_OF]-(a:Assessment) WITH c, COLLECT(DISTINCT m.module_id) AS course_modules, COLLECT(DISTINCT a.assessment_id) AS course_assessments MATCH (s:Student)-[cm:COMPLETED_MODULE]->(m:Module)-[:PART_OF]->(c) MATCH (s)-[ca:COMPLETED_ASSESSMENT]->(a:Assessment)-[:PART_OF]->(c) WITH s, course_modules, course_assessments, COLLECT(DISTINCT m.module_id) AS completed_modules, COLLECT(DISTINCT a.assessment_id) AS completed_assessments WHERE size(course_modules) = size(completed_modules) AND size(course_assessments) = size(completed_assessments) RETURN COUNT(DISTINCT s) AS students_completed"
   }
 ]

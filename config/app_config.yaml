@@ -16,7 +16,6 @@ db:
 
 
 use_llm: gemini
-use_db: neo4j
-
+use_db: neo4j # For future use
 
 

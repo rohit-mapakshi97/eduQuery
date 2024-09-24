@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from abc import ABC, abstractmethod
 from typing import Any, List, Tuple, Dict
 
+
 # This Module has the following:
 # Abstract Class for EduQuery which can be used to write pipelines for different backend systems
 # Pydantic templates used within the pipeline
@@ -14,6 +15,10 @@ class EduQuery(ABC):
     """
     Abstract class for EduQuery Pipeline, defines the core methods that need to be implemented by any subclass.
     """
+
+    # Constants for constructing prompts
+    SYSTEM_MESSAGE = 'system'
+    HUMAN_MESSAGE = 'human'
 
     @abstractmethod
     def ask(self, question: str, verbose: bool = False) -> str:
@@ -26,7 +31,7 @@ class EduQuery(ABC):
     @abstractmethod
     def prepare_ner_chain(self) -> Any:
         """
-        Prepares a Named Entity Recognition chain using prompts and the LLM.
+        Step 1: Prepares a Named Entity Recognition chain using prompts and the LLM.
         Returns a chain that processes the input question to identify entities.
         """
         pass
@@ -34,7 +39,7 @@ class EduQuery(ABC):
     @abstractmethod
     def map_to_database(self, values: List[str]) -> str:
         """
-        Matches the provided list of entity names to nodes in the Neo4j database.
+        Step 2: Matches the provided list of entity names to nodes in the Neo4j database.
         Returns a formatted string describing the mapping results for each entity.
         """
         pass
@@ -42,7 +47,7 @@ class EduQuery(ABC):
     @abstractmethod
     def prepare_cypher_response(self, entity_chain: Any) -> Any:
         """
-        Prepares the Cypher query response chain based on the identified entities and database matches.
+        Step 3: Prepares the Cypher query response chain based on the identified entities and database matches.
         It generates a Cypher query and processes it with the LLM.
         """
         pass
@@ -50,7 +55,7 @@ class EduQuery(ABC):
     @abstractmethod
     def prepare_response_chain(self, cypher_response: Any) -> Any:
         """
-        Validates the generated Cypher query and prepares the final response chain.
+        Step 4: Validates the generated Cypher query and prepares the final response chain.
         Integrates validation and response generation steps to produce the output.
         """
         pass
@@ -96,14 +101,17 @@ class PromptRepository:
     """
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls, prompts_file: str = None):
         if cls._instance is None:
             cls._instance = super(PromptRepository, cls).__new__(cls)
-            cls._instance._initialize()
+            cls._instance._initialize(prompts_file)
         return cls._instance
 
-    def _initialize(self) -> None:
-        self.prompts = self._load_prompts()
+    def _initialize(self, prompts_file: str = None) -> None:
+        if prompts_file is None:
+            raise ValueError("Prompts File should be passed the first time to initialize the PromptRepository")
+
+        self.prompts = self._load_prompts(prompts_file)
 
     def get_ner_prompt(self) -> Tuple[str, str]:
         """
@@ -123,8 +131,8 @@ class PromptRepository:
         """
         return self._prepare_prompt('responsePrompt')
 
-    def _load_prompts(self) -> Dict[str, Any]:
-        file_path = Path(__file__).resolve().parent / 'prompts' / 'graph_prompts.json'
+    def _load_prompts(self, prompts_file: str = None) -> Dict[str, Any]:
+        file_path = Path(__file__).resolve().parent / 'prompts' / prompts_file
         with open(file_path, 'r') as file:
             return json.load(file)
 

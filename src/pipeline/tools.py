@@ -6,6 +6,8 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
+# [TODO] Note: Need to research on how to pass strategies to tools. Limited documentation available
+
 # This file has various tools that the LLM can use to give complex responses
 # These tools follow the Strategy Design Pattern.
 # Based on our backend, we can pass strategies to query the relevant information
@@ -22,28 +24,31 @@ class StudentInformation(BaseModel):
 
 
 class StudentPerformanceTool(BaseTool):
-    def __init__(self, query_strategy: QueryStrategy, **kwargs: Any):
-        super().__init__(**kwargs)
-        self.query_strategy = query_strategy
+    # def __init__(self, query_strategy: QueryStrategy, **kwargs: Any):
+    #     super().__init__(**kwargs)
+    #     self.query_strategy = query_strategy
 
-    name = "Student Performance"
-    description = (
-        "useful for when you need to answer questions about various actors or movies"
+    name: str = "student_performance_tool"
+    description: str = (
+        "useful for when you need to answer questions like how is the student doing or how is the student performing"
     )
     args_schema: Type[BaseModel] = StudentInformation
+    # query_strategy: QueryStrategy
 
     def _run(
             self,
             entity: str,
             run_manager: Optional[CallbackManagerForToolRun] = None,
+            query_strategy: QueryStrategy = None,
     ) -> str:
         """Use the tool."""
-        return self.query_strategy.get_information(entity)
+        return query_strategy.get_information(entity)
 
     async def _arun(
             self,
             entity: str,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+            query_strategy: QueryStrategy = None,
     ) -> str:
         """Use the tool asynchronously."""
-        return self.query_strategy.get_information(entity)
+        return query_strategy.get_information(entity)

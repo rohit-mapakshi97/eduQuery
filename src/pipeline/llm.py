@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from langchain_core.language_models import BaseChatModel
-from src.keys import GeminiAPIConfig
+from src.api_keys import GeminiAPIConfig
 from langchain_google_genai import ChatGoogleGenerativeAI
 import logging
 
@@ -24,15 +24,14 @@ class LLMFactory:
     LLM_TEMPERATURE = 'temperature'
     LLM_MAX_RETRIES = 'max_retries'
 
-    def get_LLM(self, cfg: Dict[str, Any]) -> BaseChatModel:
+    def get_LLM(self, llm_provider: str, cfg: Dict[str, Any]) -> BaseChatModel:
         llm = None
 
-        if cfg[self.USE_LLM] == self.LLM_GEMINI:
-            cfg_gemini = cfg[self.LLM][self.LLM_GEMINI]
+        if llm_provider == self.LLM_GEMINI:
             llm = ChatGoogleGenerativeAI(
                 api_key=GeminiAPIConfig.GEMINI_API_KEY,
-                model=cfg_gemini[self.LLM_MODEL],
-                max_retries=cfg_gemini[self.LLM_MAX_RETRIES]
+                model=cfg[self.LLM_MODEL],
+                max_retries=cfg[self.LLM_MAX_RETRIES]
             )
         elif cfg[self.USE_LLM] == self.LLM_OPEN_AI:
             # TODO Similarly initialize and return Open AI model
@@ -41,5 +40,3 @@ class LLMFactory:
             logger.error(f'LLM: {cfg[self.USE_LLM]} not supported')
             raise LLMNotSupportedError()
         return llm
-
-

@@ -14,7 +14,7 @@ class QueryName:
 
     # Checks
     COURSE_EXISTS = 'course_exists'
-    INSTUCTOR_EXISTS = 'instructor_exists'
+    INSTRUCTOR_EXISTS = 'instructor_exists'
     STUDENT_EXISTS = 'student_exists'
 
     # Create Queries 
@@ -23,7 +23,7 @@ class QueryName:
     CREATE_ASSESSMENT = 'create_assessment'
     CREATE_MODULE = 'create_module'
     CREATE_STUDENT = 'create_student'
-    CREATE_ENROLLEMENT = 'create_enrollment'
+    CREATE_ENROLMENT = 'create_enrollment'
     CREATE_COMPLETED_ASSESSMENT = 'create_completed_assessment'
     CREATE_COMPLETED_MODULE = 'create_completed_module'
 
@@ -35,7 +35,10 @@ class QueryName:
     DEL_NAME_INDEX = 'del_name_index'
 
     # Pipeline Queries 
-    ENITY_DB_FULLTEXT_SEARCH = 'entity_db_fulltext_search'
+    ENTITY_DB_FULLTEXT_SEARCH = 'entity_db_fulltext_search'
+
+    # [TODO] LLM tool queries
+    QA_STUDENT_PERFORMANCE = 'qa_student_performance'
 
     # @Deprecated
     # ENTITY_DB_MATCH_QUERY = 'entity_db_match_query'
@@ -51,16 +54,19 @@ class CypherQueryRepository:
     """
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls, examples_file: str = None, queries_file: str = None):
         if cls._instance is None:
             cls._instance = super(CypherQueryRepository, cls).__new__(cls)
-            cls._instance._initialize()
+            cls._instance._initialize(examples_file, queries_file)
         return cls._instance
 
-    def _initialize(self) -> None:
+    def _initialize(self, examples_file: str, queries_file: str) -> None:
+        if examples_file is None or queries_file is None:
+            raise ValueError('File names must be provided on the first instantiation.')
+
         query_folder_path = Path(__file__).resolve().parent / 'queries'
-        self.examples = self._load_json(query_folder_path / 'graph_examples.json')
-        self.queries = self._load_json(query_folder_path / 'graph_queries.json')
+        self.examples = self._load_json(query_folder_path / examples_file)
+        self.queries = self._load_json(query_folder_path / queries_file)
 
     def get_query(self, query_name: str) -> str:
         """
@@ -75,7 +81,7 @@ class CypherQueryRepository:
     def getExamples(self) -> List[Dict[str, str]]:
         return self.examples
 
-    def _load_json(self, file_path: str) -> Any:
+    def _load_json(self, file_path: Path) -> Any:
         try:
             with open(file_path, 'r') as file:
                 data = json.load(file)
@@ -95,7 +101,7 @@ class Neo4jDB:
         try:
             self.driver = GraphDatabase.driver(uri, auth=(user, password))
         except Exception as e:
-            logger.error(f'Failed to initalize Neo4j DB {e}')
+            logger.error(f'Failed to initialize Neo4j DB {e}')
 
     def close(self):
         if self.driver:

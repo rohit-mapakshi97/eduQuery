@@ -1,7 +1,9 @@
+import yaml
+
 from src.datamodel.graph_db import Neo4jDB, CypherQueryRepository, QueryName
 from pathlib import Path
 import csv
-from src.keys import Neo4jDBConfig
+from src.api_keys import Neo4jDBConfig
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -76,7 +78,7 @@ def create_course_node(course_id: str, semester: str, section_number: str, db: N
 def create_instructor_node(file: Path, course_id: str, semester: str, section_number: str, db: Neo4jDB,
                            query_repo: CypherQueryRepository) -> None:
     def is_instructor_exist(instructor_id):
-        result = db.run_query(query_repo.get_query(QueryName.INSTUCTOR_EXISTS), {
+        result = db.run_query(query_repo.get_query(QueryName.INSTRUCTOR_EXISTS), {
             "instructor_id": instructor_id})
         return len(result) > 0
 
@@ -118,7 +120,7 @@ def create_student_node(file: Path, course_id: str, db: Neo4jDB, query_repo: Cyp
                         "student_name": row['name']
                     })
 
-                db.run_query(query_repo.get_query(QueryName.CREATE_ENROLLEMENT), {
+                db.run_query(query_repo.get_query(QueryName.CREATE_ENROLMENT), {
                     "student_id": row['student_id'],
                     "course_id": course_id
                 })
@@ -202,9 +204,14 @@ def clean_up() -> None:
 def setup_db():
     root_folder = Path(__file__).resolve().parent.parent
 
+    with open(root_folder / 'config'/ 'app_config.yaml') as file:
+        config = yaml.safe_load(file)
     # 1. Initialize Database
     with Neo4jDB(Neo4jDBConfig.NEO4J_URI, Neo4jDBConfig.NEO4J_USER, Neo4jDBConfig.NEO4J_PASSWORD) as db:
-        query_repo = CypherQueryRepository()
+        query_repo = CypherQueryRepository(
+            examples_file=config['db']['neo4j']['examples_file'],
+            queries_file=config['db']['neo4j']['queries_file']
+        )
         # 2. Populate data from CSV Files
         courses_folder = root_folder / 'data'
 
@@ -216,7 +223,7 @@ def setup_db():
                     process_course_folder(course_folder, db, query_repo)
                 except Exception as e:
                     logger.warning(
-                        f'Exception occoured while creating KG for {course_folder.name}')
+                        f'Exception occurred while creating KG for {course_folder.name}')
                     raise e
             else:
                 logger.info(f'Skipping non-directory item: {course_folder}')

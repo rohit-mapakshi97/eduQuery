@@ -12,7 +12,7 @@ while True:
     if question == 'exit':
         break
     try:
-        resp = eq.ask(question=question, verbose=True)
+        resp = eq.ask(question=question, verbose=args.verbose)
         print('\n', 'Answer:', resp, '\n\n')
     except Exception as e:
         print(e)
