@@ -190,8 +190,18 @@ def create_name_index(db: Neo4jDB, query_repo: CypherQueryRepository) -> None:
 
 
 def clean_up() -> None:
+    root_folder = Path(__file__).resolve().parent.parent
+
+    with open(root_folder / 'config'/ 'app_config.yaml') as file:
+        config = yaml.safe_load(file)
+
+    query_repo = CypherQueryRepository(
+        examples_file=config['db']['neo4j']['examples_file'],
+        queries_file=config['db']['neo4j']['queries_file']
+    )
+
     with Neo4jDB(Neo4jDBConfig.NEO4J_URI, Neo4jDBConfig.NEO4J_USER, Neo4jDBConfig.NEO4J_PASSWORD) as db:
-        query_repo = CypherQueryRepository()
+
         # 1. Delete Name index
         db.run_query(query_repo.get_query(QueryName.DEL_NAME_INDEX))
         logger.info('Deleted Name Index')
