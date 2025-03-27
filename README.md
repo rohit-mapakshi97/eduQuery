@@ -49,6 +49,10 @@ The demo has both CLI mode
    * Setup DB code in ```src/datamodel``` module. Use ```graph_db.py``` for reference 
    * Create a new pipeline in ```/src``` directory. The abtract class ```src/pipeline/edu_query: EduQuery```. Follow ```src/graph_pipeline.py``` for reference.
 
+## Deployment Using Docker  
+
+This backend is containerized with Docker and can be deployed to any cloud platform that supports containerized applications, such as **Google Cloud Run, AWS ECS, Azure Container Apps**.  
+
 
 ## Tech Stack: 
 1. Neo4J 

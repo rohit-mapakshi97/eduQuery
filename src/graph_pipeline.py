@@ -84,7 +84,7 @@ class GraphEduQuery(EduQuery):
         cypher_response = (
                 RunnablePassthrough.assign(names=entity_chain)
                 | RunnablePassthrough.assign(
-            entities_list=lambda x: self.map_to_database(x['names'][0]['args']['names']),
+            entities_list = lambda x: self.map_to_database(x['names'][0]['args']['names']) if x['names'] else [],
             schema=lambda _: self.graph.get_schema)
                 | RunnablePassthrough.assign(
             examples=lambda _: few_shot_prompt.format()

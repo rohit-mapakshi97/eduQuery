@@ -248,6 +248,7 @@ if __name__ == '__main__':
     if choice == "1":
         clean_up()
     else:
+        clean_up()
         setup_db()
 
 

@@ -1,5 +1,10 @@
 [
   {
+    "question": "Who are the top 3 students?",
+    "query": "MATCH (s:Student) WITH s, SUM(toFloat(s.score)) AS total_score ORDER BY total_score DESC RETURN s.student_name AS student_name, total_score LIMIT 3"
+  },
+  {
+
     "question": "What is the average score for students for assessment 1?",
     "query": "MATCH (s:Student)-[c:COMPLETED_ASSESSMENT]->(a:Assessment {assessment_id: '3'}) RETURN AVG(toFloat(c.score)) AS average_score"
   },
@@ -9,6 +14,10 @@
   },
   {
     "question": "What did students think about the content in module 1?",
+    "query": "MATCH (s:Student)-[cm:COMPLETED_MODULE]->(m:Module {module_id: '1'}) RETURN cm.feedback"
+  },
+    {
+    "question": "How do students feel about module 1?",
     "query": "MATCH (s:Student)-[cm:COMPLETED_MODULE]->(m:Module {module_id: '1'}) RETURN cm.feedback"
   },
   {
